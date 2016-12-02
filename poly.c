@@ -1,22 +1,55 @@
 /**
-F9ÔÚÄãĞèÒªÍ£ÏÂµÄµØ·½ÉèÖÃ¶Ïµã
-F5½øÈëµ÷ÊÔ
-F10µ¥²½ÔËĞĞ
-F11½øÈëº¯Êı
+F9åœ¨ä½ éœ€è¦åœä¸‹çš„åœ°æ–¹è®¾ç½®æ–­ç‚¹
+F5è¿›å…¥è°ƒè¯•
+F10å•æ­¥è¿è¡Œ
+F11è¿›å…¥å‡½æ•°
 **/
 #include "poly.h"
 #include<stdio.h>
 #include<stdlib.h>
-//ÓÉÊı×éeµÄÇ°nÏî¹¹½¨µÄÒ»ÔªÏ¡Êè¶àÏîÊ½P
+
+float pow(float x,int i){
+	float count = x;
+	int j;
+	if(i==0)return 1;
+	if(i>0){
+		for(j=2;j<=i;j++){
+			count = count * x;
+		}
+		return count;
+	}
+	else {
+		i=-i;
+		for(j=2;j<=i;j++){
+			count = count * x;
+		}
+		count=1/count;
+		return count;
+	}
+}
+
+
+//é‡ç½®ä¸€å…ƒç¨€ç–å¤šé¡¹å¼P
 Status InitPoly(Poly* Ptr)
 {
-    //Ptr = (Poly*)malloc(sizeof(Poly));
-    if(Ptr==NULL)return OVERFLOW;
-    Ptr->firstTerm=NULL;
+//	Term *termPtr,*temp;
+	if(Ptr==NULL)return ERROR;
+
+/*	if(Ptr->firstTerm!=NULL)//æœªåˆå§‹åŒ–ï¼=NULL
+	{
+		termPtr = Ptr->firstTerm;
+		while(termPtr!=NULL)
+		{
+			temp=termPtr;
+			termPtr = termPtr->next;
+			free(temp);
+		}
+	}*/
+	Ptr->firstTerm=NULL;
     Ptr->length=0;
     return OK;
 }
-//Ñ°ÕÒºÏÊÊµÄÎ»ÖÃ²åÈëÒ»¸öÏî£¬Ö¸ÊıĞ¡µÄ·ÅÇ°Ãæ£¬Ö¸ÊıÏàÍ¬ÔòºÏ²¢£¬Îª0Ôò²»²åÈë
+//å¯»æ‰¾åˆé€‚çš„ä½ç½®æ’å…¥ä¸€ä¸ªé¡¹ï¼ŒæŒ‡æ•°å°çš„æ”¾å‰é¢ï¼ŒæŒ‡æ•°ç›¸åŒåˆ™åˆå¹¶ï¼Œä¸º0åˆ™ä¸æ’å…¥
 Status InsertTerm(Poly *Ptr,Term term)
 {	Term *termPtr;
     if(Ptr==NULL)return ERROR;
@@ -25,38 +58,43 @@ Status InsertTerm(Poly *Ptr,Term term)
 	termPtr = (Term*)malloc(sizeof(Term));
 	(*termPtr)=term;
 
-	 //Èç¹ûÏµÊıÎª0£¬²»Ìí¼Ó
-    if(term.expn==0)
-    {
+	//ç¡®ä¿termçš„nextçš„åœ°å€ä¸ä¼šè¢«ä¿ç•™ï¼Œå¦åˆ™ä¼šå‘ç”Ÿæ„å¤–çš„bug
+	{	if(termPtr->next!=NULL)
+		termPtr->next=NULL;
+	}
+
+	 //å¦‚æœç³»æ•°ä¸º0ï¼Œä¸æ·»åŠ 
+    if(term.coef==0)
+    {																//	printf("ç³»æ•°ä¸º0ä¸æ·»åŠ !:%d\n",PolyLength(*Ptr));
 		return OK;
     }
 
-	//Èç¹ûÊÇ¿ÕµÄ¶àÏîÊ½£¬Ìí¼ÓÎªfirstTerm£»»òÕßÈç¹ûÊÇÖ¸Êı×îĞ¡£¬²åÈë³ÉÎªfirstTerm
+	//å¦‚æœæ˜¯ç©ºçš„å¤šé¡¹å¼ï¼Œæ·»åŠ ä¸ºfirstTermï¼›æˆ–è€…å¦‚æœæ˜¯æŒ‡æ•°æœ€å°ï¼Œæ’å…¥æˆä¸ºfirstTerm
     if(NULL==Ptr->firstTerm||term.expn < Ptr->firstTerm->expn)
-    {	
+    {																	
 		termPtr->next = Ptr->firstTerm;
-        Ptr->firstTerm = termPtr;			
-
+        Ptr->firstTerm = termPtr;				
+																	//	printf("æ’å…¥æˆä¸ºé¦–é¡¹!:%d\n",PolyLength(*Ptr));
     }
     else
     {
-        //Ñ°ÕÒºÏÊÊµÄÎ»ÖÃ
+        //å¯»æ‰¾åˆé€‚çš„ä½ç½®
         Term *p ,*pre;
 		p = Ptr->firstTerm;
 		pre = NULL;
 
-        while (  NULL!=p->next && term.expn > p->expn)//pÖ¸Ïò  ×îºóÒ»ÏîÊ±/ÕÒµ½Ö¸Êı<=ËüµÄÏîÊ±£¬Í£Ö¹Ñ­»·
+        while (  NULL!=p->next && term.expn > p->expn)//pæŒ‡å‘  æœ€åä¸€é¡¹æ—¶/æ‰¾åˆ°æŒ‡æ•°<=å®ƒçš„é¡¹æ—¶ï¼Œåœæ­¢å¾ªç¯
         {
             pre = p;
             p = p->next;
         }
-       //Èç¹ûÕÒµ½Ö¸ÊıÏàµÈµÄÔòºÏ²¢
+       //å¦‚æœæ‰¾åˆ°æŒ‡æ•°ç›¸ç­‰çš„åˆ™åˆå¹¶
          if(term.expn==p->expn)
-        {printf("ºÏ²¢");
-            //Ö¸ÊıÏà¼Ó
+        {																
+            //æŒ‡æ•°ç›¸åŠ 
             p->coef+=term.coef;
 
-            //Èç¹ûÏµÊıÎª0£¬É¾³ı²¢ÊÍ·Å¸Ã½Úµã
+            //å¦‚æœç³»æ•°ä¸º0ï¼Œåˆ é™¤å¹¶é‡Šæ”¾è¯¥èŠ‚ç‚¹
             if(p->coef==0)
             {
 				if(pre==NULL)Ptr->firstTerm=p->next;
@@ -65,28 +103,28 @@ Status InsertTerm(Poly *Ptr,Term term)
 				Ptr->length--;
                 free(p);
             }
-
+																		//	printf("åˆå¹¶ä¸€é¡¹:%d\n",PolyLength(*Ptr));
 			return OK;
         }
-		 //Èç¹ûÕÒµ½Ö¸Êı±ÈËü´óµÄµÄÏîÊ±
+		 //å¦‚æœæ‰¾åˆ°æŒ‡æ•°æ¯”å®ƒå¤§çš„çš„é¡¹æ—¶
         else if(term.expn<p->expn)
         {
-printf("²åÈëÖĞ¼ä!");
+																		
 			if(pre==NULL)Ptr->firstTerm=p->next;
 			else
             pre->next=termPtr;
-            termPtr->next=p->next;
-			
+            termPtr->next=p;
+																		//	printf("æ’å…¥ä¸­é—´ä¸€é¡¹!:%d\n",PolyLength(*Ptr));
 
         }
-		 //Èç¹ûÊÇµ½ÁË×îºó£¬Ôò²åÔÚ×îºó
+		 //å¦‚æœæ˜¯åˆ°äº†æœ€åï¼Œåˆ™æ’åœ¨æœ€å
        else if(p->next==NULL)
         {
-		   printf("²åÈëÄ©Î²!");
+																		
             p->next=termPtr;
-
+																	//		printf("æ’å…¥æœ«å°¾ä¸€é¡¹!:%d\n",PolyLength(*Ptr));
 	   }else{
-			printf("²åÈëÏîÊı³ö´í!!");
+			printf("æ’å…¥é¡¹æ•°å‡ºé”™!!");
 			return ERROR;
 	   }
     }
@@ -94,7 +132,7 @@ printf("²åÈëÖĞ¼ä!");
     Ptr->length++;
     return OK;
 }
-//Ïú»ÙPoly
+//é”€æ¯Poly
 Status Destory(Poly* Ptr)
 {
     Term *temp,*p;
@@ -114,63 +152,215 @@ Status Destory(Poly* Ptr)
     return OK;
 }
 
-//´òÓ¡Êä³öPoly
+//æ‰“å°è¾“å‡ºPolyçš„è£¸æ•°æ®
 Status PrintPoly(Poly poly)
 {
     Term term;
-    int i=0;
-    printf("P(x)=");
+    int i=1;
 	if(poly.firstTerm==NULL)
 	{
-		printf("0.\n");
+		printf("0");
 		return OK;
 	}else
 		term=*poly.firstTerm;
 
-    for(; ; i++)
-    {       
-        printf("%.0fx^%d",term.coef,term.expn);//Êä³öÒ»Ïî
-        if(i==poly.length-1||(term.next!=NULL&&term.next->coef<0)){//Èç¹ûÃ»ÓĞÏÂÒ»Ïî»òÕßÏÂÒ»Ïî´ø-ºÅ£¬Ôò²»Êä³ö+ºÅ
+    while(i++)
+    {   
+		//è¾“å…¥ç³»æ•°
+		if(term.coef==1)
+		{
+			printf("");
+		}
+		else if(term.coef==-1)
+		{
+			printf("-");
+		}
+		else 
+		{
+			printf("%.1f",term.coef);
+		}
 
-		}else{
+		//è¾“å…¥x
+		if(term.expn==0)
+		{
+			printf("");
+		}
+		else 
+		{
+			printf("x");
+        }
+		
+		//è¾“å…¥æŒ‡æ•°
+		if(term.expn==0||term.expn==1)
+		{
+			printf("");
+        }
+		else 
+		{
+			printf("^%d",term.expn);
+        }
+
+		//è¾“å…¥åŠ å·
+		if(term.next==NULL||(term.next!=NULL&&term.next->coef<0))//å¦‚æœæ²¡æœ‰ä¸‹ä¸€é¡¹æˆ–è€…ä¸‹ä¸€é¡¹å¸¦-å·ï¼Œåˆ™ä¸è¾“å‡º+å·
+		{
+			printf("");
+		}
+		else
+		{
 			printf("+");
 		}
-		if(term.next==NULL)break;//Ã»ÓĞÏÂÒ»ÏîÊ±Ìø³öÑ­»·
+		if(term.next==NULL)break;//æ²¡æœ‰ä¸‹ä¸€é¡¹æ—¶è·³å‡ºå¾ªç¯
 		term=*term.next;		
     }
-    printf(".\n\n");
+    //printf(".");
     return OK;
 }
 
-//·µ»ØPolyÏîÊı
+//è¿”å›Polyé¡¹æ•°
 int PolyLength(Poly P)
 {
-    return P.length;
-
+    Term *termPtr;int i=0;
+	if(P.firstTerm==NULL)return 0;
+	else 
+	{
+		termPtr=P.firstTerm;
+		while(termPtr!=NULL)
+		{
+			i++;
+			termPtr=termPtr->next;
+		}
+	}
+	return i;
 }
 
-//PolyµÄ¼Ó·¨*resultPtr=Pa+Pb
+//Polyçš„åŠ æ³•*resultPtr=Pa+Pb
 void AddPoly(Poly Pa,Poly Pb,Poly* resultPtr)
 {
+	Term *PaPtr,*PbPtr;
 
+	//ä¿è¯ä¼ è¿›æ¥çš„polyå·²ç»åˆå§‹åŒ–
+	{	resultPtr->length=0;
+		resultPtr->firstTerm=NULL;
+	}
+
+	PaPtr = Pa.firstTerm;
+	PbPtr = Pb.firstTerm;
+	
+	while(PaPtr!=NULL)
+	{
+		InsertTerm(resultPtr,*PaPtr);
+		PaPtr = PaPtr->next;
+	}
+	while(PbPtr!=NULL) 
+	{
+		InsertTerm(resultPtr,*PbPtr);
+		PbPtr = PbPtr->next;
+	}
 }
 
-//PolyµÄ¼õ·¨*resultPtr=Pa-Pb
+//Polyçš„å‡æ³•*resultPtr=Pa-Pb
 void SubPoly(Poly Pa,Poly Pb,Poly* resultPtr)
 {
 
+	Term *PbPtr;
+	PbPtr=Pb.firstTerm;
+	while(PbPtr!=NULL)
+	{
+		PbPtr->coef=-PbPtr->coef;
+		PbPtr=PbPtr->next;
+	}
+	AddPoly(Pa,Pb,resultPtr);
+	PbPtr=Pb.firstTerm;
+	while(PbPtr!=NULL)
+	{
+		PbPtr->coef=-PbPtr->coef;
+		PbPtr=PbPtr->next;
+	}
 }
 
-//PolyµÄ³Ë·¨*resultPtr=Pa*Pb
+//Polyçš„ä¹˜æ³•*resultPtr=Pa*Pb
 void MulPoly(Poly Pa,Poly Pb,Poly* resultPtr)
 {
+	Term *PaPtr,*PbPtr,temp;
+
+	//ä¿è¯ä¼ è¿›æ¥çš„polyå·²ç»åˆå§‹åŒ–
+	{	resultPtr->length=0;
+		resultPtr->firstTerm=NULL;
+	}
+
+	PaPtr = Pa.firstTerm;
+	PbPtr = Pb.firstTerm;
+
+	if(PaPtr==NULL||PbPtr==NULL)
+	{
+		return;
+	}
+
+	temp.next=NULL;
+	while(PaPtr!=NULL)
+	{
+		if(PbPtr==NULL)
+		{
+			PaPtr=PaPtr->next;
+			PbPtr=Pb.firstTerm;
+			continue;
+		}else
+		{
+			temp.coef=PaPtr->coef*PbPtr->coef;
+			temp.expn=PaPtr->expn+PbPtr->expn;
+			InsertTerm(resultPtr,temp);
+			PbPtr=PbPtr->next;
+		}
+	}
 
 }
 
-//PolyµÄ³ı·¨*resultPtr=Pa/Pb
-void DivPoly(Poly Pa,Poly Pb,Poly* resultPtr)
-{
 
+//æ±‚Polyåœ¨xä¸‹çš„å€¼
+float ValueForX(Poly P,float x)
+{
+	Term *termPtr;
+	float value = 0;
+	if(P.firstTerm==NULL||P.length==0)
+	{
+		return 0;
+	}
+	else
+	{	
+		termPtr=P.firstTerm;
+		while(termPtr!=NULL)
+		{
+			value+=termPtr->coef*pow(x,termPtr->expn);
+			termPtr=termPtr->next;
+		}
+	}
+	return value;
+}
+
+//æ±‚Polyçš„å¯¼å‡½æ•°
+Poly getDerivedPoly(Poly origin)
+{
+	Poly derived;
+	Term term,*termPtr;
+
+	derived.firstTerm=NULL;
+	derived.length=0;
+
+	if(origin.firstTerm==NULL||origin.length==0)
+		return derived;
+	else 
+	{
+		term.next=NULL;
+		termPtr=origin.firstTerm;
+		while(termPtr!=NULL)
+		{
+			term.coef=termPtr->coef*termPtr->expn;
+			term.expn=termPtr->expn-1;
+			InsertTerm(&derived,term);
+			termPtr=termPtr->next;
+		}
+	}
+	return derived;
 }
 
 
