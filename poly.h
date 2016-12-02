@@ -6,28 +6,29 @@
 typedef int Status;
 typedef struct Term
 {
-    float coef;//ÏµÊı
-    int expn;//Ö¸Êı
-    struct Term *next;//ÏÂÒ»Ïî
+    float coef;//ç³»æ•°
+    int expn;//æŒ‡æ•°
+    struct Term *next;//ä¸‹ä¸€é¡¹
 
-} Term; //Ïî
+} Term; //é¡¹
 
 typedef struct Poly
 {
-    Term *firstTerm;//´æ´¢¿Õ¼äÊ×µØÖ·
-    int length;//ÏîÊı
+    Term *firstTerm;//å­˜å‚¨ç©ºé—´é¦–åœ°å€
+    int length;//é¡¹æ•°
 
-} Poly; //Ò»ÔªÏ¡Êè¶àÏîÊ½Í·½áµã
+} Poly; //ä¸€å…ƒç¨€ç–å¤šé¡¹å¼å¤´ç»“ç‚¹
 
-Status InitPoly(Poly *Ptr);                   //³õÊ¼»¯Ò»¸öÒ»ÔªÏ¡Êè¶àÏîÊ½µÄÍ·½áµã
-Status InsertTerm(Poly *Ptr,Term term);       //Ñ°ÕÒºÏÊÊµÄÎ»ÖÃ²åÈëÒ»¸öÏî£¬Ö¸ÊıÏàÍ¬ÔòºÏ²¢£¬Îª0Ôò²»²åÈë
-Status Destory(Poly *Ptr);                    //Ïú»ÙPoly
-Status PrintPoly(Poly P);                       //´òÓ¡Êä³öPoly
-int PolyLength(Poly P);                         //·µ»ØPolyÏîÊı
-void AddPoly(Poly Pa,Poly Pb,Poly *resultPtr);//PolyµÄ¼Ó·¨*resultPtr=Pa+Pb
-void SubPoly(Poly Pa,Poly Pb,Poly *resultPtr);//PolyµÄ¼õ·¨*resultPtr=Pa-Pb
-void MulPoly(Poly Pa,Poly Pb,Poly *resultPtr);//PolyµÄ³Ë·¨*resultPtr=Pa*Pb
-void DivPoly(Poly Pa,Poly Pb,Poly *resultPtr);//PolyµÄ³ı·¨*resultPtr=Pa/Pb
+Status InitPoly(Poly *Ptr);                   //åˆå§‹åŒ–ä¸€ä¸ªä¸€å…ƒç¨€ç–å¤šé¡¹å¼çš„å¤´ç»“ç‚¹
+Status InsertTerm(Poly *Ptr,Term term);       //å¯»æ‰¾åˆé€‚çš„ä½ç½®æ’å…¥ä¸€ä¸ªé¡¹ï¼ŒæŒ‡æ•°ç›¸åŒåˆ™åˆå¹¶ï¼Œä¸º0åˆ™ä¸æ’å…¥
+Status Destory(Poly *Ptr);                    //é”€æ¯Poly
+Status PrintPoly(Poly P);                       //æ‰“å°è¾“å‡ºPoly
+int PolyLength(Poly P);                         //è¿”å›Polyé¡¹æ•°
+void AddPoly(Poly Pa,Poly Pb,Poly *resultPtr);	//Polyçš„åŠ æ³•*resultPtr=Pa+Pb
+void SubPoly(Poly Pa,Poly Pb,Poly *resultPtr);	//Polyçš„å‡æ³•*resultPtr=Pa-Pb
+void MulPoly(Poly Pa,Poly Pb,Poly *resultPtr);	//Polyçš„ä¹˜æ³•*resultPtr=Pa*Pb
+float ValueForX(Poly P,float x);				//æ±‚Polyåœ¨xä¸‹çš„å€¼
+Poly getDerivedPoly(Poly origin);				//æ±‚Polyçš„å¯¼å‡½æ•°
 
 
 
