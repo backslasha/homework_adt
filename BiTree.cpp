@@ -27,7 +27,19 @@ void PreOrderTraverse(BiTree T);					//递归先序遍历二叉树
 int BiTreeDepth(BiTree T);							//求一棵二叉树的深度
 void CountLeaf(BiTree T,int &count);							//求一棵二叉树的叶子节点数
 BiTree CreateBiTreeByString(char *defBT,int &i,int level);				//给出指定的字符串，基于先序遍历，建立一个二叉树，其中defBT是字符数组，i是下标，初始为0，level是初始层数为1
-
+void printBiTree(BiTree T)		//竖向打印二叉树
+{
+    int i;
+     
+    if (T == NULL)
+        return;
+ 
+    printBiTree(T->rchild);
+    for (i = 0; i < T->level; i++)
+        printf("   ");
+    printf("%c\n", T->data);
+    printBiTree(T->lchild);
+}
 
 /***************测试用队列接口*******************/
 typedef BiTree ElemType;
@@ -80,18 +92,10 @@ Status DeQueue(LQueue &L,ElemType &e)
     L._front = L._front->next;
 
     free(L_copy);
+	return OK;
 }
 
-//根据二叉树节点的level打印data
-void printTNodeByLevel(BiTree T,int &preH)
-{
-    if(T->level > preH)
-    {
-        printf("\n");
-        preH = T->level;
-    }
-    printf("\"%c\" ",T->data);
-}
+
 //借助队列的层序遍历二叉树
 void LevelOrderTraverse(BiTree T)
 {
@@ -106,8 +110,7 @@ void LevelOrderTraverse(BiTree T)
     {
         DeQueue(Q,T);
 
-        printTNodeByLevel(T,d);
-
+		//visit
         if(T->lchild!=NULL)EnQueue(Q,T->lchild);
         if(T->rchild!=NULL)EnQueue(Q,T->rchild);
     }
@@ -117,7 +120,7 @@ void LevelOrderTraverse(BiTree T)
 //测试
 int main()
 {
-    printf("tab the string : \n");
+    printf("tab the string with preTraverse Order to build the BiTree: \n");
     char defBT[100];
     {//从键盘接收字符串
         char ch;
@@ -137,7 +140,7 @@ int main()
 
     //层数遍历从根节点出发从上到下输出二叉树
     printf("创建二叉树成功！层数结构为 : \n\n");
-    LevelOrderTraverse(T);
+    printBiTree(T);
     printf("\n\n");
 
 
@@ -153,15 +156,15 @@ int main()
     BreakBiTree(root,L,R);
 
     printf("根树：\n");
-    LevelOrderTraverse(root);
+    printBiTree(root);
     printf("\n\n");
 
     printf("左树：\n");
-    LevelOrderTraverse(L);
+    printBiTree(L);
     printf("\n\n");
 
     printf("右树：\n");
-    LevelOrderTraverse(R);
+    printBiTree(R);
     printf("\n\n");
 
     return 0;
@@ -235,9 +238,8 @@ void PreOrderTraverse(BiTree T)
         printf("#\n");
         return;
     }
-
-    PreOrderTraverse(T->lchild);
     printf("%c\n",T->data);
+    PreOrderTraverse(T->lchild);
     PreOrderTraverse(T->rchild);
 }
 
@@ -273,4 +275,3 @@ BiTree CreateBiTreeByString(char *defBT,int &i,int level)
     }
     return T;
 }
-
